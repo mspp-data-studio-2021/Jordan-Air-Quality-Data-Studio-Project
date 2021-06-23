@@ -1,4 +1,6 @@
-
+env/
 .ipynb_checkpoints/first notebook-checkpoint.ipynb
 .ipynb_checkpoints/Untitled-checkpoint.ipynb
 .DS_Store
+*.docx
+.ipynb_checkpoints/
