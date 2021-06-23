@@ -4,3 +4,4 @@ env/
 .DS_Store
 *.docx
 .ipynb_checkpoints/
+.Rproj.user
