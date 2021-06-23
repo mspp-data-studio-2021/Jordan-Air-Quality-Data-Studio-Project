@@ -1,0 +1,8 @@
+[1,"Installing 'mime' for R Markdown...\n"]
+[1,"  There is a binary version available but the source version is later:\n"]
+[1,"     binary source needs_compilation\n"]
+[1,"mime   0.10   0.11              TRUE\n"]
+[2,"installing the source package ‘mime’\n\ntrying URL 'https://cran.rstudio.com/src/contrib/mime_0.11.tar.gz'\n"]
+[2,"Content type 'application/x-gzip' length 12523 bytes (12 KB)\n==================================================\ndownloaded 12 KB\n\n"]
+[2,"* installing *source* package ‘mime’ ...\n** package ‘mime’ successfully unpacked and MD5 sums checked\n** using staged installation\n"]
+[2,"** libs\nxcode-select: note: no developer tools were found at '/Applications/Xcode.app', requesting install. Choose an option in the dialog to download the command line developer tools.\nERROR: compilation failed for package ‘mime’\n* removing ‘/Library/Frameworks/R.framework/Versions/4.1/Resources/library/mime’\n\nThe downloaded source packages are in\n\t‘/private/var/folders/1v/7bs_54j56jx4gvphfz20_tpw0000gn/T/Rtmps3ofQZ/downloaded_packages’\n\n\n✔ Package 'mime' successfully installed.\nWarning message:\nIn utils::install.packages(\"mime\", repos = \"https://cran.rstudio.com/\") :\n  installation of package ‘mime’ had non-zero exit status\n"]
