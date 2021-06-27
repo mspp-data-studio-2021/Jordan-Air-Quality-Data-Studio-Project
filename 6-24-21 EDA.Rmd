@@ -1,0 +1,211 @@
+---
+title: "6-24-21 EDA assignment"
+output: html_notebook
+---
+Main Question: How have pollution levels changed over the course of the COVID-19 pandemic? Have the pandemic lockdown policies affected these pollution levels?
+pollution levels = AQI (Air Quality Index) measurements by EPA
+planning on using COVID-19 fatalities as a proxy for the lockdown policies 
+
+hypothesis: as lockdown policies become more strict (proxy: as COVID deaths increase), pollution levels (AQI measurements) will decrease 
+
+
+loading needed packages
+```{r}
+library(tidyverse)
+library(fs)
+```
+loading in first dataset I'll be using (EPA data from 2020)
+```{r}
+EPA_2020 <- read_csv(path("EPA AQI by county 2020.csv"))
+```
+getting an idea of what the dataset looks like
+```{r}
+glimpse(EPA_2020)
+library(skimr)
+skim(EPA_2020)
+```
+cleaned up column names to all lowercase and joined words
+```{r}
+library(janitor)
+EPA_2020 <- clean_names(EPA_2020)
+view(EPA_2020)
+```
+filtered dataset to only include New York data 
+```{r}
+only_nys_2020 <- filter(EPA_2020, state_name == "New York")
+view(only_nys_2020)
+```
+loading in second EPA dataset (what's available for 2021 so far)
+```{r}
+EPA_2021 <- read_csv(path("EPA AQI by county 2021.csv"))
+```
+getting a look at second dataset
+```{r}
+glimpse(EPA_2021)
+view(EPA_2021)
+```
+cleaned up column names to all lowercase and joined words
+```{r}
+EPA_2021 <- clean_names(EPA_2021)
+view(EPA_2021)
+```
+filtered second dataset to only include New York data
+```{r}
+only_nys_2021 <- filter(EPA_2021, state_name == "New York")
+view(only_nys_2021)
+```
+getting important info about both NYS datasets
+```{r}
+skim(only_nys_2020)
+skim(only_nys_2021)
+```
+I think I'm going to look only at the Ozone and PM2.5 observations 
+
+The pollutants I originally wanted to look at (CO, SO2, and NO2) don't have consistent readings in all the counties in the state in only_nys_2020 and only_nys_2021 datasets. There's either a fair amount of readings but all in one county, or a handful of readings in a few counties. Using the search feature in the view window for each dataset, it looks like the ozone and the pm2.5 readings are taken consistently in every county in the state. 
+
+I think focusing on the ozone observations will still work for my purpose because bad ozone is created when pollution emitted by cars, factories, etc react chemically in sunlight, so if there's ozone, there also has to be pollution. Ozone is bad for your health because it makes it hard to breathe (especially for those with asthma) and it can cause issues for vegetation leading to bigger ecosystem problems. More info can be found here: https://www.epa.gov/ground-level-ozone-pollution/ground-level-ozone-basics
+
+I think including the PM2.5 readings will help round out my analysis because PM2.5 is extremely small particulate matter that is either emitted by construction sites, smokestacks, etc or created by chemical reactions between pollutants emitted by cars, factories, etc. PM2.5 causes issues because it can create hazes (think LA) reducing visibility. It can also be breathed in and can even get into your bloodstream. More info here: https://www.epa.gov/pm-pollution/particulate-matter-pm-basics
+
+filtered the two datasets to include only Ozone and PM2.5 observations
+```{r}
+filter(only_nys_2020, defining_parameter == "Ozone" | defining_parameter == "PM2.5")
+only_nys_2020
+filter(only_nys_2021, defining_parameter == "Ozone" | defining_parameter == "PM2.5")
+only_nys_2021
+```
+Getting rid of columns I won't need
+```{r}
+select(only_nys_2020, -state_name, -state_code, -defining_site)
+only_nys_2020
+select(only_nys_2021, -state_name, -state_code, -defining_site)
+only_nys_2021
+```
+*will actually assign above changes once I'm sure this is definitely what I want to do and get feedback*
+
+trying to figure out the mean AQI
+```{r}
+filter(only_nys_2020, defining_parameter == "Ozone" | defining_parameter == "PM2.5")
+summary(only_nys_2020)
+filter(only_nys_2021, defining_parameter == "Ozone" | defining_parameter == "PM2.5")
+summary(only_nys_2021)
+```
+trying to figure out the mean AQI for Ozone and PM2.5 individually 
+```{r}
+only_nys_2021 %>% 
+  group_by(defining_parameter) %>% 
+  summarize(avg_AQI = mean(aqi)) 
+ungroup(only_nys_2021)
+```
+again for 2020 data 
+```{r}
+only_nys_2020 %>% 
+  group_by(defining_parameter) %>% 
+  summarize(avg_AQI = mean(aqi)) 
+ungroup(only_nys_2020)
+```
+*would like to separate out above to give average aqi by pollutant by county* 
+
+all pollutants together  
+```{r}
+summarise(only_nys_2020, avg_AQI = mean(aqi))
+summarise(only_nys_2021, avg_AQI = mean(aqi))
+```
+
+trying out a graph but it's adding up all the AQI measurements giving really large numbers 
+*can't figure out how to get the graph to show the average AQI in each county instead*
+*would also like to separate out into different bars for ozone and pm2.5*
+```{r}
+ggplot(data = only_nys_2020) +
+  aes(x = county_name, y = aqi) +
+  geom_col() +
+  coord_flip() +
+  scale_y_continuous(labels = scales::comma) +
+  labs(
+    title = 'AQI by county',
+    subtitle = "Ozone and PM2.5",
+    x = NULL,
+    y = "AQI level",
+    caption = "Source: EPA"
+  )
+```
+
+
+loading in third and final dataset I'll be using (covid fatalities data from health.data.ny.gov)
+```{r}
+NYS_Covid_Deaths <- read_csv(path("NYS COVID deaths by county.csv"))
+```
+looking at covid dataset
+```{r}
+glimpse(NYS_Covid_Deaths)
+view(NYS_Covid_Deaths)
+```
+cleaned up column names to all lowercase and joined words
+```{r}
+NYS_Covid_Deaths <- clean_names(NYS_Covid_Deaths)
+view(NYS_Covid_Deaths)
+```
+NYS has been tracking covid fatalies two ways: 
+1) "Place of Fatality" = where person died (hospitals, nursing homes, and adult care facilities) is the county their death is counted in even if they didn't live in that county 
+2) "Deaths by County of Residence" = number of deaths in hospitals, nursing homes, and adult care facilities based on the patients' county of residence 
+
+I think using the second measure (deaths by county of residence) makes more sense for my project (*would love feedback on this though*)
+
+I know this data leaves out any deaths that occurred outside of these places, but it's what the state decided to track and has data on 
+
+getting important info about this dataset
+```{r}
+skim(NYS_Covid_Deaths)
+```
+getting rid of columns I won't need 
+```{r}
+select(NYS_Covid_Deaths, -place_of_fatality)
+NYS_Covid_Deaths
+```
+*like above, will assign this change once I'm sure and get feedback*
+
+covid deaths
+```{r}
+summary(NYS_Covid_Deaths)
+```
+total deaths 
+```{r}
+summarise(NYS_Covid_Deaths, total_deaths = sum(deaths_by_county_of_residence))
+```
+trying to get average deaths 
+*doesn't separate by county - ran into same issue above with EPA data* 
+```{r}
+summarize(NYS_Covid_Deaths, avg_death = mean(deaths_by_county_of_residence))
+```
+Got it! Average deaths by county 
+```{r}
+NYS_Covid_Deaths %>% 
+  group_by(county) %>% 
+  summarize(avg_death = mean(deaths_by_county_of_residence)) 
+ungroup(NYS_Covid_Deaths)
+```
+
+trying out a graph 
+*looks like it's giving me the total covid deaths by county*
+*want to show the average deaths by county instead, maybe if I create a new column for average deaths then I can make that new column the y variable on the graph?* 
+```{r}
+ggplot(data = NYS_Covid_Deaths) +
+  aes(x = county, y = deaths_by_county_of_residence) +
+  geom_col() +
+  coord_flip() +
+   scale_y_continuous(labels = scales::comma) +
+  labs(
+    title = 'NYS COVID Deaths',
+    subtitle = "by county of residence",
+    x = NULL,
+    y = "Number of Deaths",
+    caption = "Source: NYS Health")
+```
+
+Final Questions: 
+1) Do you have the right data? 
+  I think I do 
+2) Do you need other data?
+  No, I don't think so 
+3) Do you have the right question?
+  Yes, at this point I believe I do 
