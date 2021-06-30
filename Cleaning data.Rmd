@@ -1,0 +1,159 @@
+---
+title: "Cleaning Data"
+output: html_document
+---
+In this notebook, I import and clean the three datasets I'll be using for this project. 
+
+Loading needed packagaes
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(fs)
+library(skimr)
+library(janitor)
+```
+First I'll import the first dataset - EPA air pollution data from 2020
+```{r}
+EPA_2020 <- read_csv(path("EPA AQI by county 2020.csv"))
+```
+I want to get an idea of what the dataset looks like
+```{r}
+glimpse(EPA_2020)
+skim(EPA_2020)
+view(EPA_2020)
+```
+I'll clean up the names of the columns in the dataset to make them more user-friendly (all lowercase and joined words) 
+```{r}
+EPA_2020 <- clean_names(EPA_2020)
+view(EPA_2020)
+```
+Filter the dataset so that we have only New York State data 
+```{r}
+EPA_2020 <- filter(EPA_2020, state_name == "New York")
+view(EPA_2020)
+```
+Load in the second dataset (EPA air pollution data from 2021)
+```{r}
+EPA_2021 <- read_csv(path("EPA AQI by county 2021.csv"))
+```
+Get a look at the second dataset
+```{r}
+glimpse(EPA_2021)
+skim(EPA_2021)
+view(EPA_2021)
+```
+Clean up this dataset's column names too 
+```{r}
+EPA_2021 <- clean_names(EPA_2021)
+view(EPA_2021)
+```
+Filter this dataset so we have only NYS data
+```{r}
+EPA_2021 <- filter(EPA_2021, state_name == "New York")
+view(EPA_2021)
+```
+Get important info about both NYS-only datasets 
+```{r}
+skim(EPA_2020)
+skim(EPA_2021)
+```
+Load in the final dataset I'll be using (NYS COVID fatalities data)
+```{r}
+NYS_Covid_Deaths <- read_csv(path("NYS COVID deaths by county.csv"))
+```
+Get a look at this dataset
+```{r}
+glimpse(NYS_Covid_Deaths)
+view(NYS_Covid_Deaths)
+```
+Clean up this dataset's column names
+```{r}
+NYS_Covid_Deaths <- clean_names(NYS_Covid_Deaths)
+view(NYS_Covid_Deaths)
+```
+Get important info about this dataset
+```{r}
+skim(NYS_Covid_Deaths)
+```
+Now I'll get rid of columns I won't need in these datasets 
+```{r}
+EPA_2020 <- select(EPA_2020, -state_name, -state_code, -defining_site)
+EPA_2020
+EPA_2021 <- select(EPA_2021, -state_name, -state_code, -defining_site)
+EPA_2021
+NYS_Covid_Deaths <- select(NYS_Covid_Deaths, -place_of_fatality)
+NYS_Covid_Deaths
+```
+getting rid of a few more columns I won't need
+```{r}
+EPA_2020 <- select(EPA_2020, -county_code, -category)
+EPA_2021 <- select(EPA_2021, -county_code, -category)
+```
+
+```{r}
+view(EPA_2020)
+view(EPA_2021)
+view(NYS_Covid_Deaths)
+```
+
+This project will be using data for only Ozone and PM2.5 pollutants so now I'll get rid of the data for other pollutants in the 2 EPA datasets 
+```{r}
+EPA_2020 <- filter(EPA_2020, defining_parameter == "Ozone" | defining_parameter == "PM2.5")
+view(EPA_2020)
+EPA_2021 <- filter(EPA_2021, defining_parameter == "Ozone" | defining_parameter == "PM2.5")
+view(EPA_2021)
+```
+
+Now I need to rename some of the columns so that they are common across the three datasets and easier to use
+```{r}
+EPA_2020 <- rename(EPA_2020, pollutant = defining_parameter)
+EPA_2020 <- rename(EPA_2020, county = county_name)
+view(EPA_2020)
+EPA_2021 <- rename(EPA_2021, pollutant = defining_parameter)
+EPA_2021 <- rename(EPA_2021, county = county_name)
+view(EPA_2021)
+NYS_Covid_Deaths <- rename(NYS_Covid_Deaths, date = report_date)
+NYS_Covid_Deaths <- rename(NYS_Covid_Deaths, deaths = deaths_by_county_of_residence)
+view(NYS_Covid_Deaths)
+```
+Making sure that the date columns in each dataset are in date format 
+```{r}
+glimpse(EPA_2020)
+glimpse(EPA_2021)
+glimpse(NYS_Covid_Deaths)
+```
+EPA_2021 and NYS_Covid_Deaths do not have their date columns in the correct format so I need to reformat them 
+```{r}
+new_EPA_2021 <- EPA_2021 %>%
+  mutate(new_date = mdy(date))
+view(new_EPA_2021)
+```
+```{r}
+new_NYS_Covid_Deaths <- NYS_Covid_Deaths %>%
+  mutate(new_date = mdy(date))
+view(new_NYS_Covid_Deaths)
+```
+correcting column names
+```{r}
+new_EPA_2021 <- select(new_EPA_2021, -date)
+new_EPA_2021 <- rename(new_EPA_2021, date = new_date)
+view(new_EPA_2021)
+```
+```{r}
+new_NYS_Covid_Deaths <- select(new_NYS_Covid_Deaths, -date)
+new_NYS_Covid_Deaths <- rename(new_NYS_Covid_Deaths, date = new_date)
+view(new_NYS_Covid_Deaths)
+```
+```{r}
+view(new_EPA_2020)
+```
+Now all 3 datasets' date columns are in the correct format 
+
+All 3 datasets are now clean 
+
+the clean datasets' names are: 
+new_EPA_2020 
+new_EPA_2021
+new_NYS_Covid_Deaths
+
+
