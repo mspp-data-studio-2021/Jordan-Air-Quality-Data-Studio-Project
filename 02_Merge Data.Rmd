@@ -1,0 +1,36 @@
+---
+title: "Merge Data"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+Loading in needed packages 
+```{r}
+library(tidyverse)
+library(fs)
+library(skimr)
+library(janitor)
+```
+Now that the three datasets are clean, I need to merge them into one dataset so that I can begin my analysis 
+
+First I can combine the new_EPA_2020 and the new_EPA_2021 datasets. I'm using the rbind function because these two datasets have the same column names and are essentially just the 2020 and 2021 sets of the same collected data. 
+```{r}
+combined_data <- rbind(new_EPA_2020, new_EPA_2021)
+view(combined_data)
+```
+Next I need to merge in the new_NYS_Covid_Deaths dataset. I'm using the inner_join() command because I want to look at only the time period that both the EPA data and the NYS Covid data  covers. This is the time period from 3/27/2020 to 3/31/2021. 
+```{r}
+merged_data <- inner_join(
+  combined_data,
+  new_NYS_Covid_Deaths,
+  by = c("county", "date"),
+  copy = FALSE,
+  suffix = c(".x", ".y"),
+  keep = FALSE,
+  na_matches = c("na", "never")
+)
+view(merged_data)
+```
+Now I have one dataset (called "merged_data") that I can now use for my analysis going forward.
