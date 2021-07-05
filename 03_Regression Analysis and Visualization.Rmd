@@ -1,0 +1,51 @@
+---
+title: "03_Regression Analysis and Visualization"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+loading needed packages 
+```{r}
+library(tidyverse)
+library(fs)
+library(skimr)
+library(ggpubr)
+library(broom)
+```
+Now that my data is cleaned and has been merged into one dataset, I can start my analysis 
+
+My main question coming into this project was: How have pollution levels changed over the course of the COVID-19 pandemic? Have the pandemic lockdown policies affected these pollution levels?
+(pollution levels = AQI (Air Quality Index) measurements by EPA)
+
+I'm interested in how lockdown policies affected the amount of air pollution, specifically in NYS. I'm using COVID deaths as a proxy for lockdown policies with the assumption that more deaths means stricter lockdown policies. My hypothesis is that as lockdown policies become more strict (proxy: as COVID deaths increase), pollution levels (AQI measurements) will decrease. 
+
+So, to explore the relationship between the number of COVID deaths (the "deaths" column of the dataset) and the amount of air pollution (the "aqi" column of the dataset), I'm running a regression. 
+
+First, I want to run a regression with deaths as my independent variable and aqi (air pollution) as my dependent variable without adding in any controls. 
+```{r}
+regression_results <- lm(aqi ~ deaths, data = merged_data) %>% 
+    tidy()
+view(regression_results)
+```
+I got a p value of 0.2435661. It is not statistically significant at the 5% level. 
+
+Now, I'll run the same regression but also add in controls. Because I am working with a fairly simple dataset that does not have many variables, I am limited in how much I can control for. 
+
+I'm going to control for county, date, pollutant, and number_of_sites_reporting
+
+```{r}
+regression_results_with_controls <- lm(aqi ~ deaths + county + date + pollutant + number_of_sites_reporting, data = merged_data) %>% 
+    tidy()
+view(regression_results_with_controls)
+```
+I got a p value of 2.767511e-23. 
+
+Visualization  
+https://www.theanalysisfactor.com/linear-models-r-plotting-regression-lines/ 
+```{r}
+
+```
+
+
