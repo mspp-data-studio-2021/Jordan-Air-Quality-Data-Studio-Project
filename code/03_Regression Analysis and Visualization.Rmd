@@ -13,6 +13,10 @@ library(fs)
 library(skimr)
 library(ggpubr)
 library(broom)
+library(ggpmisc)
+library(ggplot2)
+library(gtsummary)
+library(gt)
 ```
 Now that my data is cleaned and has been merged into one dataset, I can start my analysis 
 
@@ -40,12 +44,48 @@ regression_results_with_controls <- lm(aqi ~ deaths + county + date + pollutant 
     tidy()
 view(regression_results_with_controls)
 ```
-I got a p value of 2.767511e-23. 
+I got a p value of 2.767511e-23. so significant but positive relationship (expecting negative relationship)
+
 
 Visualization  
-https://www.theanalysisfactor.com/linear-models-r-plotting-regression-lines/ 
-```{r}
 
+#Thank you to Keith Wescott for his code to make this visualization 
+```{r}
+my.formula <- y ~ x
+ggplot(data = merged_data) +
+  aes(x = deaths, y = aqi, color = pollutant) +
+  geom_point(size = 0.5, alpha = 0.25) +
+  geom_smooth(method=lm, se=TRUE, show.legend=TRUE,formula = my.formula) +
+   stat_poly_eq(formula = my.formula, 
+                aes(label = paste(..eq.label.., ..rr.label.., sep = "~~~")), 
+                parse = TRUE) + 
+  coord_cartesian(ylim = c(0,156)) +
+  labs(
+    title = "Regression of AQI on COVID Deaths",
+    subtitle = "By Pollutant",
+    x = "COVID Deaths",
+    y = "Pollutant AQI levels",
+    caption = "Source: EPA and NYS Health",
+  )
+```
+#cool table - still figuring it out 
+```{r}
+test_regression <- lm(
+  aqi ~ deaths + county + date + pollutant + number_of_sites_reporting, 
+  data = merged_data,
+)
+  
+tbl_regression(
+  test_regression,
+  label = list(
+    "deaths" ~ "COVID Deaths in NYS", 
+    "county" ~ "County in NYS", 
+    "date" ~ "Date",
+    "pollutant" ~ "Ozone and PM2.5",
+    "number_of_sites_reporting" ~ "Sites where AQI measured"
+  )
+)
+   
 ```
 
 
