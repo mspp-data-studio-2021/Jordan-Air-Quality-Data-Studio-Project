@@ -1,0 +1,187 @@
+---
+title: "04_Visualizations"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+loading needed packages 
+```{r}
+library(tidyverse)
+library(fs)
+library(skimr)
+library(ggpubr)
+library(broom)
+library(ggpmisc)
+library(ggplot2)
+```
+In this notebook, I want to create some additional visualizations 
+
+First I want to show how aqi has changed over the time period I'm looking at (bar graph)
+```{r}
+ggplot(merged_data) +
+  aes(x = date, y = aqi, fill = pollutant) +
+  geom_col(stat = "identity", position = "dodge") +
+  scale_x_continuous(breaks = 2020:2021) +
+  scale_y_continuous(labels = scales::label_number_si()) +
+  labs(
+    title = "AQI levels from March 2020-March 2021",
+    subtitle = "By Pollutant: Ozone and PM2.5",
+    fill = NULL,
+    x = "Date",
+    y = "AQI Level",
+    caption = "Source: EPA"
+  )
+```
+Next I want to try to visualize the changing aqi separately by pollutant 
+Ozone:
+#need to figure this out 
+```{r}
+merged_data %>% 
+  filter(pollutant %in% c("Ozone")) %>% 
+  ggplot(merged_data) +
+    aes(x = date, y = aqi, fill = pollutant) +
+    geom_col() +
+    scale_x_continuous(breaks = 2020:2021) +
+    scale_y_continuous(labels = scales::label_number_si()) +
+    labs(
+      title = "AQI levels from March 2020-March 2021",
+      subtitle = "Pollutant: Ozone",
+      fill = NULL,
+      x = "Date",
+      y = "AQI Level",
+      caption = "Source: EPA"
+    )
+```
+PM2.5 
+#need to figure this out 
+```{r}
+merged_data %>% 
+  filter(pollutant %in% c("PM2.5")) %>% 
+  ggplot(merged_data) +
+    aes(x = date, y = aqi, fill = pollutant) +
+    geom_col() +
+    scale_x_continuous(breaks = 2020:2021) +
+    scale_y_continuous(labels = scales::label_number_si()) +
+    labs(
+      title = "AQI levels from March 2020-March 2021",
+      subtitle = "Pollutant: PM2.5",
+      fill = NULL,
+      x = "Date",
+      y = "AQI Level",
+      caption = "Source: EPA"
+    )
+```
+Line graph with both pollutants: 
+```{r}
+ggplot(merged_data) +
+  aes(x = date, y = aqi, color = pollutant) +
+  geom_line() +
+  scale_x_continuous(breaks = 2020:2021) +
+  scale_y_continuous(labels = scales::label_number_si()) +
+  labs(
+    title = "AQI Levels from March 2020-March 2021",
+    subtitle = "By Pollutant: Ozone and PM2.5",
+    color = NULL,
+    x = "Date",
+    y = "AQI Level",
+    caption = "Source: EPA"
+  )
+```
+COVID deaths bar graph 
+```{r}
+ggplot(merged_data) +
+  aes(x = date, y = deaths, fill = county) +
+  geom_col(stat = "identity", position = "dodge") +
+  scale_x_continuous(breaks = 2020:2021) +
+  scale_y_continuous(labels = scales::label_number_si()) +
+  labs(
+    title = "COVID Deaths in NYS from March 2020-March 2021",
+    subtitle = "By County",
+    fill = NULL,
+    x = "Date",
+    y = "COVID Deaths",
+    caption = "Source: NYS Health"
+  )
+```
+COVID Deaths line graph: 
+```{r}
+ggplot(merged_data) +
+  aes(x = date, y = deaths, color = county) +
+  geom_line() +
+  scale_x_continuous(breaks = 2020:2021) +
+  scale_y_continuous(labels = scales::label_number_si()) +
+  labs(
+    title = "COVID Deaths in NYS from March 2020-March 2021",
+    subtitle = "By County",
+    color = NULL,
+    x = "Date",
+    y = "COVID deaths",
+    caption = "Source: NYS Health"
+  )
+```
+total COVID deaths by county: 
+#not sure if I want to keep this one 
+```{r}
+ggplot(data = merged_data) +
+  aes(x = county, y = deaths) +
+  geom_col() +
+  coord_flip() +
+   scale_y_continuous(labels = scales::comma) +
+  labs(
+    title = 'NYS COVID Deaths',
+    subtitle = "by county of residence",
+    x = NULL,
+    y = "Number of Deaths",
+    caption = "Source: NYS Health")
+```
+
+basic stats 
+
+average aqi by county (ozone and PM2.5 combined)
+```{r}
+merged_data %>% 
+  group_by(county) %>% 
+  summarize(avg_aqi = mean(aqi)) 
+ungroup(merged_data)
+```
+average aqi by county by pollutant
+```{r}
+merged_data %>% 
+  group_by(pollutant, county) %>% 
+  summarize(avg_AQI = mean(aqi)) 
+ungroup(merged_data)
+```
+average aqi across counties separated by pollutant 
+```{r}
+merged_data %>% 
+  group_by(pollutant) %>% 
+  summarize(avg_AQI = mean(aqi)) 
+ungroup(merged_data)
+```
+
+average COVID deaths by county 
+```{r}
+merged_data %>% 
+  group_by(county) %>% 
+  summarize(avg_death = mean(deaths)) 
+ungroup(merged_data)
+```
+#still working on maps
+```{r}
+ggplot(merged_data) +
+  aes(fill = pollutant) +
+  geom_sf(color = "white", size = 0.05) +
+  scale_fill_viridis_b(labels = scales::percent) +
+  theme_void() +
+  theme(legend.position = c(0.1, .75)) +
+  labs(
+    title = "Renter Share of Units",
+    subtitle = "New York City,Census Tracts, 2014-2018",
+    fill = NULL,
+    caption = "Sources: American Community Survey (2014-2018)"
+  )
+```
+
+#would like to make an animated visualization - not sure what though so feedback appreciated
