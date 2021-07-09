@@ -1,6 +1,7 @@
 ---
 title: "03_Regression Analysis and Visualization"
 output: html_document
+author: Jordan Koster
 ---
 
 ```{r setup, include=FALSE}
@@ -44,11 +45,23 @@ regression_results_with_controls <- lm(aqi ~ deaths + county + date + pollutant 
     tidy()
 view(regression_results_with_controls)
 ```
-I got a p value of 2.767511e-23. so significant but positive relationship (expecting negative relationship)
+I got a p value of 2.767511e-23. It is significant at the 1% level.
 
+With my hypothesis stated above, I was expecting a negative relationship between the two variables of interest, so my estimate should be negative. However, the estimate given by the regression is 0.003324804, indicating a positive relationship. 
 
-Visualization  
+To explore this positive relationship, I'm going to run a regression with deaths as my dependent variable and aqi (air pollution) as my independent variable with same controls as above. 
+```{r}
+reverse_regression_results_with_controls <- lm(deaths ~ aqi + county + date + pollutant + number_of_sites_reporting, data = merged_data) %>% 
+    tidy()
+view(reverse_regression_results_with_controls)
+```
+I got a p value of 2.767511e-23, which is significant at the 1% level. The estimate is 3.187643, indicating a positive relationship. 
 
+This was not the result I was expecting but it makes sense (see my blog post for more information)
+
+Visualizations  
+
+Visualizing first regression (lines 44-46)
 #Thank you to Keith Wescott for his code to make this visualization 
 ```{r}
 my.formula <- y ~ x
@@ -59,7 +72,7 @@ ggplot(data = merged_data) +
    stat_poly_eq(formula = my.formula, 
                 aes(label = paste(..eq.label.., ..rr.label.., sep = "~~~")), 
                 parse = TRUE) + 
-  coord_cartesian(ylim = c(0,156)) +
+  coord_cartesian(ylim = c(0,100)) +
   labs(
     title = "Regression of AQI on COVID Deaths",
     subtitle = "By Pollutant",
@@ -68,15 +81,34 @@ ggplot(data = merged_data) +
     caption = "Source: EPA and NYS Health",
   )
 ```
-#cool table - still figuring it out 
+Visualizing second (reverse) regression (lines 54-56 )
 ```{r}
-test_regression <- lm(
+my.formula.1 <- y ~ x
+ggplot(data = merged_data) +
+  aes(x = aqi, y = deaths, color = pollutant) +
+  geom_point(size = 0.5, alpha = 0.25) +
+  geom_smooth(method=lm, se=TRUE, show.legend=TRUE,formula = my.formula.1) +
+   stat_poly_eq(formula = my.formula.1, 
+                aes(label = paste(..eq.label.., ..rr.label.., sep = "~~~")), 
+                parse = TRUE) + 
+  coord_cartesian(ylim = c(0,4000), xlim = c(0,100)) +
+  labs(
+    title = "Regression of COVID Deaths on AQI",
+    subtitle = "By Pollutant",
+    x = "Pollutant AQI Levels",
+    y = "COVID Deaths",
+    caption = "Source: EPA and NYS Health",
+  )
+```
+Table showing first regression results
+```{r}
+first_regression <- lm(
   aqi ~ deaths + county + date + pollutant + number_of_sites_reporting, 
   data = merged_data,
 )
   
 tbl_regression(
-  test_regression,
+  first_regression,
   label = list(
     "deaths" ~ "COVID Deaths in NYS", 
     "county" ~ "County in NYS", 
@@ -85,7 +117,24 @@ tbl_regression(
     "number_of_sites_reporting" ~ "Sites where AQI measured"
   )
 )
-   
+```
+Table showing second (reverse) regression results
+```{r}
+reverse_regression <- lm(
+  deaths ~ aqi + county + date + pollutant + number_of_sites_reporting, 
+  data = merged_data,
+)
+  
+tbl_regression(
+  reverse_regression,
+  label = list(
+    "aqi" ~ "AQI Pollutant Measurements", 
+    "county" ~ "County in NYS", 
+    "date" ~ "Date",
+    "pollutant" ~ "Ozone and PM2.5",
+    "number_of_sites_reporting" ~ "Sites where AQI measured"
+  )
+)
 ```
 
 
