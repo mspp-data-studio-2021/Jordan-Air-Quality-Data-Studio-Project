@@ -1,6 +1,7 @@
 ---
 title: "Merge Data"
 output: html_document
+author: Jordan Koster
 ---
 
 ```{r setup, include=FALSE}
