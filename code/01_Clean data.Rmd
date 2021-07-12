@@ -12,10 +12,11 @@ library(tidyverse)
 library(fs)
 library(skimr)
 library(janitor)
+library(lubridate)
 ```
 First I'll import the first dataset - EPA air pollution data from 2020
 ```{r}
-EPA_2020 <- read_csv(path("raw data/EPA AQI by county 2020.csv"))
+EPA_2020 <- read_csv(path("/Users/jordankoster/Desktop/Jordan-Air-Quality-Data-Studio-Project/raw data/EPA AQI by county 2020.csv"))
 ```
 I want to get an idea of what the dataset looks like
 ```{r}
@@ -35,7 +36,7 @@ view(EPA_2020)
 ```
 Load in the second dataset (EPA air pollution data from 2021)
 ```{r}
-EPA_2021 <- read_csv(path("raw data/EPA AQI by county 2021.csv"))
+EPA_2021 <- read_csv(path("/Users/jordankoster/Desktop/Jordan-Air-Quality-Data-Studio-Project/raw data/EPA AQI by county 2021.csv"))
 ```
 Get a look at the second dataset
 ```{r}
@@ -60,7 +61,7 @@ skim(EPA_2021)
 ```
 Load in the final dataset I'll be using (NYS COVID fatalities data)
 ```{r}
-NYS_Covid_Deaths <- read_csv(path("raw data/NYS COVID deaths by county.csv"))
+NYS_Covid_Deaths <- read_csv(path("/Users/jordankoster/Desktop/Jordan-Air-Quality-Data-Studio-Project/raw data/NYS COVID deaths by county.csv"))
 ```
 Get a look at this dataset
 ```{r}
@@ -159,5 +160,7 @@ the clean datasets' names are:
 new_EPA_2020 
 new_EPA_2021
 new_NYS_Covid_Deaths
+
+#add code that automatically saves cleaned datasets to clean data folder
 
 
