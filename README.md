@@ -15,7 +15,7 @@ This project uses three datasets from two different sources.
 * [NYS Department of Health](https://health.data.ny.gov/Health/New-York-State-Statewide-COVID-19-Fatalities-by-Co/xymy-pny5) 
   * This dataset reports COVID-19 fatalities each day for each county in NYS from March 2020 to June 2021 as recorded by the NYS Department of Health. 
 * All three raw datasets can be found in the folder titled [raw data](https://github.com/mspp-data-studio-2021/Jordan-Air-Quality-Data-Studio-Project/tree/main/raw%20data) 
-* All 3 cleaned datasets can be found in the folder titled [clean data](https://github.com/mspp-data-studio-2021/Jordan-Air-Quality-Data-Studio-Project/tree/main/clean%20data) 
+* All three cleaned datasets can be found in the folder titled [clean data](https://github.com/mspp-data-studio-2021/Jordan-Air-Quality-Data-Studio-Project/tree/main/clean%20data) 
 ## Replicating the Analysis
 * All necessary code is located in the folder titled [code](https://github.com/mspp-data-studio-2021/Jordan-Air-Quality-Data-Studio-Project/tree/main/code) 
 * All notebooks are numbered in the order they need to be run in: 
