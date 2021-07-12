@@ -62,6 +62,7 @@ merged_data %>%
     )
 ```
 PM2.5 bar graph: 
+#make blue
 ```{r}
 merged_data %>% 
   filter(pollutant %in% c("PM2.5")) %>% 
@@ -85,11 +86,11 @@ merged_data %>%
       caption = "Source: EPA"
     )
 ```
+
 Interactive line graph with both pollutants: 
-#figure out how to include by county in hover text
 ```{r}
 a <- ggplot(merged_data) +
-  aes(x = date, y = aqi, color = pollutant) +
+  aes(x = date, y = aqi, color = pollutant, label=county) +
   geom_line() +
   scale_x_date(date_labels = "%Y-%m") +
   scale_y_continuous(labels = scales::label_number_si()) +
@@ -101,21 +102,25 @@ a <- ggplot(merged_data) +
   ) +
   labs(
     title = "AQI Levels from March 2020-March 2021",
-    subtitle = "By Pollutant: Ozone and PM2.5",
     color = NULL,
     x = "Date",
-    y = "AQI Level",
-    caption = "Source: EPA"
+    y = "AQI Level"
   )
-ggplotly(a)
+ggplotly(a) %>% 
+  layout(title = list(text = paste0('Ozone and PM2.5 AQI Levels, by County, from 3/2020-3/2021',
+                                    '<br>',
+                                    '<sup>',
+                                    'Source: EPA',
+                                     '<sup>',
+                                    '</sup>')))
 ```
 Interactive line graph for just PM2.5: 
-#figure out how to include by county in hover text
+#make blue
 ```{r}
 b <- merged_data %>% 
   filter(pollutant %in% c("PM2.5")) %>% 
   ggplot() +
-    aes(x = date, y = aqi, color = pollutant) +
+    aes(x = date, y = aqi, color = pollutant, label=county) +
     geom_line() +
     scale_x_date(date_labels = "%Y-%m") +
     scale_y_continuous(labels = scales::label_number_si()) +
@@ -127,21 +132,24 @@ b <- merged_data %>%
   ) +
     labs(
     title = "AQI Levels from March 2020-March 2021",
-    subtitle = "Pollutant: PM2.5",
     color = NULL,
     x = "Date",
-    y = "AQI Level",
-    caption = "Source: EPA"
+    y = "AQI Level"
   )
-ggplotly(b)
+ggplotly(b) %>% 
+   layout(title = list(text = paste0('PM2.5 AQI Levels, by County, from 3/2020-3/2021',
+                                    '<br>',
+                                    '<sup>',
+                                    'Source: EPA',
+                                     '<sup>',
+                                    '</sup>')))
 ```
 Interactive line graph with just Ozone:
-#figure out how to include by county in hover text
 ```{r}
 c <- merged_data %>% 
   filter(pollutant %in% c("Ozone")) %>% 
   ggplot() +
-    aes(x = date, y = aqi, color = pollutant) +
+    aes(x = date, y = aqi, color = pollutant, label=county) +
     geom_line() +
     scale_x_date(date_labels = "%Y-%m") +
     scale_y_continuous(labels = scales::label_number_si()) +
@@ -153,14 +161,19 @@ c <- merged_data %>%
   ) +
     labs(
     title = "AQI Levels from March 2020-March 2021",
-    subtitle = "Pollutant: Ozone",
     color = NULL,
     x = "Date",
-    y = "AQI Level",
-    caption = "Source: EPA"
+    y = "AQI Level"
   )
-ggplotly(c)
+ggplotly(c) %>% 
+  layout(title = list(text = paste0('Ozone AQI Levels, by County, from 3/2020-3/2021',
+                                    '<br>',
+                                    '<sup>',
+                                    'Source: EPA',
+                                     '<sup>',
+                                    '</sup>')))
 ```
+
 COVID deaths bar graph:
 #get feedback on this 
 ```{r}
@@ -181,7 +194,7 @@ ggplot(merged_data) +
     fill = NULL,
     x = "Date",
     y = "COVID Deaths",
-    caption = "Source: NYS Health"
+    caption = "Source: NYS Dept. of Health"
   )
 ```
 COVID Deaths line graph for select counties: 
@@ -205,7 +218,7 @@ merged_data %>%
     color = NULL,
     x = "Date",
     y = "COVID deaths",
-    caption = "Source: NYS Health"
+    caption = "Source: NYS Dept. of Health"
   )
 ```
 Interactive COVID Deaths line graph (all counties): 
@@ -230,7 +243,13 @@ d <- ggplot(merged_data) +
     y = "COVID deaths",
     caption = "Source: NYS Health"
   )
-ggplotly(d)
+ggplotly(d) %>% 
+   layout(title = list(text = paste0('COVID Deaths in NYS, by County, from 3/2020-3/2021',
+                                    '<br>',
+                                    '<sup>',
+                                    'Source: NYS Dept. of Health',
+                                     '<sup>',
+                                    '</sup>')))
 ```
 
 Basic Stats 
