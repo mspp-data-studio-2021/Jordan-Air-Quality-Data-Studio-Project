@@ -62,7 +62,6 @@ merged_data %>%
     )
 ```
 PM2.5 bar graph: 
-#make blue
 ```{r}
 merged_data %>% 
   filter(pollutant %in% c("PM2.5")) %>% 
@@ -86,11 +85,10 @@ merged_data %>%
       caption = "Source: EPA"
     )
 ```
-
-Interactive line graph with both pollutants: 
+Interactive line graph with pollutants (original):
 ```{r}
 a <- ggplot(merged_data) +
-  aes(x = date, y = aqi, color = pollutant, label=county) +
+  aes(x = date, y = aqi, color = pollutant, label = county) +
   geom_line() +
   scale_x_date(date_labels = "%Y-%m") +
   scale_y_continuous(labels = scales::label_number_si()) +
@@ -104,7 +102,7 @@ a <- ggplot(merged_data) +
     title = "AQI Levels from March 2020-March 2021",
     color = NULL,
     x = "Date",
-    y = "AQI Level"
+    y = "AQI Level",
   )
 ggplotly(a) %>% 
   layout(title = list(text = paste0('Ozone and PM2.5 AQI Levels, by County, from 3/2020-3/2021',
@@ -114,8 +112,37 @@ ggplotly(a) %>%
                                      '<sup>',
                                     '</sup>')))
 ```
+
+
+Interactive line graph with both pollutants (new grid style): 
+```{r}
+a1 <- ggplot(merged_data) +
+  aes(x = date, y = aqi, color = pollutant, label = county) +
+  geom_line() +
+  scale_x_date(date_labels = "%b-%y", date_breaks = "4 months") +
+  scale_y_continuous(labels = scales::label_number_si()) +
+  facet_wrap(vars(county),nrow = 5) +
+  theme_minimal() +
+  theme(
+     panel.grid.major.y = element_blank(),
+     axis.text.y = element_text(margin = margin(r = -15)),
+     plot.caption = element_text(face = "italic", color = "darkgrey", margin = margin(t = 10)), axis.text.x = element_text(angle = 45)
+  ) +
+  labs(
+    title = "AQI Levels from March 2020-March 2021",
+    color = NULL,
+    x = "Date",
+    y = "AQI Level"
+  )
+ggplotly(a1) %>% 
+  layout(title = list(text = paste0('Ozone and PM2.5 AQI Levels, by County, from 3/2020-3/2021',
+                                    '<br>',
+                                    '<sup>',
+                                    'Source: EPA',
+                                     '<sup>',
+                                    '</sup>')))
+```
 Interactive line graph for just PM2.5: 
-#make blue
 ```{r}
 b <- merged_data %>% 
   filter(pollutant %in% c("PM2.5")) %>% 
@@ -175,7 +202,6 @@ ggplotly(c) %>%
 ```
 
 COVID deaths bar graph:
-#get feedback on this 
 ```{r}
 ggplot(merged_data) +
   aes(x = date, y = deaths, fill = county) +
