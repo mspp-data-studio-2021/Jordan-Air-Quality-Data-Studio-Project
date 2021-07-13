@@ -15,13 +15,8 @@ library(skimr)
 library(ggpubr)
 library(broom)
 library(ggpmisc)
-library(ggplot2)
 library(gtsummary)
 library(gt)
-library(purrr)
-library(forcats)
-library(readr)
-library(stringr) 
 library(ggeffects)
 ```
 Now that my data is cleaned and has been merged into one dataset, I can start my analysis 
@@ -37,7 +32,7 @@ First, I want to run a regression with deaths as my independent variable and aqi
 ```{r}
 regression_results <- lm(aqi ~ deaths, data = merged_data) %>% 
     tidy()
-view(regression_results)
+regression_results
 ```
 I got a p value of 0.2435661. It is not statistically significant at the 5% level. 
 
@@ -46,9 +41,12 @@ Now, I'll run the same regression but also add in controls. Because I am working
 I'm going to control for county, date, pollutant, and number_of_sites_reporting
 
 ```{r}
+merged_data <- mutate(merged_data, date = as.character(date))
+
 regression_results_with_controls <- lm(aqi ~ deaths + county + date + pollutant + number_of_sites_reporting, data = merged_data)
 summary(regression_results_with_controls)
 ```
+
 ```{r}
 regression_results_with_controls <- lm(aqi ~ deaths + county + date + pollutant + number_of_sites_reporting, data = merged_data) %>% 
     tidy()
@@ -84,10 +82,11 @@ first_regression <- lm(
   
 tbl_regression(
   first_regression,
+  include = -date,
   label = list(
     "deaths" ~ "COVID Deaths in NYS", 
     "county" ~ "County in NYS", 
-    "date" ~ "Date",
+    # "date" ~ "Date",
     "pollutant" ~ "Ozone and PM2.5",
     "number_of_sites_reporting" ~ "Sites where AQI measured"
   )
@@ -102,10 +101,11 @@ reverse_regression <- lm(
   
 tbl_regression(
   reverse_regression,
+  include = -date,
   label = list(
     "aqi" ~ "AQI Pollutant Measurements", 
     "county" ~ "County in NYS", 
-    "date" ~ "Date",
+    # "date" ~ "Date",
     "pollutant" ~ "Ozone and PM2.5",
     "number_of_sites_reporting" ~ "Sites where AQI measured"
   )
@@ -116,11 +116,42 @@ Visualizations
 Visualizing first regression (lines 48-50)
 ```{r}
 regression=lm(aqi ~ deaths + county + date + pollutant + number_of_sites_reporting, data = merged_data)
-ggpredict(regression)
+pred1 <- ggpredict(regression)
 ```
+
+```{r}
+ggplot(pred1$deaths) + 
+  aes(x = x, y = predicted) +   
+  geom_point(aes(y = aqi, x = deaths), data = merged_data) +
+  geom_ribbon(aes(ymin = conf.low, ymax = conf.high, x = x), 
+              fill = "red",
+              alpha = .3,
+              inherit.aes = FALSE) + 
+  geom_line(color = "red", size = 1) +
+  theme_minimal()
+
+
+
+```
+
+
+
+
 Visualizing second (reverse) regression (lines 58-60 )
 ```{r}
 reverse_regression=lm(deaths ~ aqi + county + date + pollutant + number_of_sites_reporting, data = merged_data)
-ggpredict(reverse_regression)
+pred2 <- ggpredict(reverse_regression)
+```
+
+```{r}
+ggplot(pred2$aqi) + 
+  aes(x = x, y = predicted) +   
+  geom_point(aes(y = deaths, x = aqi), data = merged_data) +
+  geom_ribbon(aes(ymin = conf.low, ymax = conf.high, x = x), 
+              fill = "red",
+              alpha = .3,
+              inherit.aes = FALSE) + 
+  geom_line(color = "red", size = 1) +
+  theme_minimal()
 ```
 
