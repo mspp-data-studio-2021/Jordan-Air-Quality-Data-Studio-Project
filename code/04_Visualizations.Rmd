@@ -223,6 +223,7 @@ ggplot(merged_data) +
     caption = "Source: NYS Dept. of Health"
   )
 ```
+
 COVID Deaths line graph for select counties: 
 ```{r}
 merged_data %>% 
@@ -276,6 +277,7 @@ ggplotly(d) %>%
                                      '<sup>',
                                     '</sup>')))
 ```
+
 Interactive COVID Deaths line graph - all counties (grid style): 
 ```{r}
 d1 <- ggplot(merged_data) +
