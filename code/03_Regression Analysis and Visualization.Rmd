@@ -18,6 +18,11 @@ library(ggpmisc)
 library(ggplot2)
 library(gtsummary)
 library(gt)
+library(purrr)
+library(forcats)
+library(readr)
+library(stringr) 
+library(ggeffects)
 ```
 Now that my data is cleaned and has been merged into one dataset, I can start my analysis 
 
@@ -41,65 +46,35 @@ Now, I'll run the same regression but also add in controls. Because I am working
 I'm going to control for county, date, pollutant, and number_of_sites_reporting
 
 ```{r}
+regression_results_with_controls <- lm(aqi ~ deaths + county + date + pollutant + number_of_sites_reporting, data = merged_data)
+summary(regression_results_with_controls)
+```
+```{r}
 regression_results_with_controls <- lm(aqi ~ deaths + county + date + pollutant + number_of_sites_reporting, data = merged_data) %>% 
     tidy()
 view(regression_results_with_controls)
 ```
+
 I got a p value of 2.767511e-23. It is significant at the 1% level.
 
 With my hypothesis stated above, I was expecting a negative relationship between the two variables of interest, so my estimate should be negative. However, the estimate given by the regression is 0.003324804, indicating a positive relationship. 
 
 To explore this positive relationship, I'm going to run a regression with deaths as my dependent variable and aqi (air pollution) as my independent variable with same controls as above. 
 ```{r}
+reverse_regression_results_with_controls <- lm(deaths ~ aqi + county + date + pollutant + number_of_sites_reporting, data = merged_data)
+summary(reverse_regression_results_with_controls)
+```
+
+```{r}
 reverse_regression_results_with_controls <- lm(deaths ~ aqi + county + date + pollutant + number_of_sites_reporting, data = merged_data) %>% 
     tidy()
 view(reverse_regression_results_with_controls)
 ```
+
 I got a p value of 2.767511e-23, which is significant at the 1% level. The estimate is 3.187643, indicating a positive relationship. 
 
 This was not the result I was expecting but it makes sense (see my blog post for more information)
 
-Visualizations  
-
-Visualizing first regression (lines 44-46)
-#Thank you to Keith Wescott for his code to make this visualization 
-```{r}
-my.formula <- y ~ x
-ggplot(data = merged_data) +
-  aes(x = deaths, y = aqi, color = pollutant) +
-  geom_point(size = 0.5, alpha = 0.25) +
-  geom_smooth(method=lm, se=TRUE, show.legend=TRUE,formula = my.formula) +
-   stat_poly_eq(formula = my.formula, 
-                aes(label = paste(..eq.label.., ..rr.label.., sep = "~~~")), 
-                parse = TRUE) + 
-  coord_cartesian(ylim = c(0,100)) +
-  labs(
-    title = "Regression of AQI on COVID Deaths",
-    subtitle = "By Pollutant",
-    x = "COVID Deaths",
-    y = "Pollutant AQI levels",
-    caption = "Source: EPA and NYS Health",
-  )
-```
-Visualizing second (reverse) regression (lines 54-56 )
-```{r}
-my.formula.1 <- y ~ x
-ggplot(data = merged_data) +
-  aes(x = aqi, y = deaths, color = pollutant) +
-  geom_point(size = 0.5, alpha = 0.25) +
-  geom_smooth(method=lm, se=TRUE, show.legend=TRUE,formula = my.formula.1) +
-   stat_poly_eq(formula = my.formula.1, 
-                aes(label = paste(..eq.label.., ..rr.label.., sep = "~~~")), 
-                parse = TRUE) + 
-  coord_cartesian(ylim = c(0,4000), xlim = c(0,100)) +
-  labs(
-    title = "Regression of COVID Deaths on AQI",
-    subtitle = "By Pollutant",
-    x = "Pollutant AQI Levels",
-    y = "COVID Deaths",
-    caption = "Source: EPA and NYS Health",
-  )
-```
 Table showing first regression results
 ```{r}
 first_regression <- lm(
@@ -136,5 +111,16 @@ tbl_regression(
   )
 )
 ```
+Visualizations  
 
+Visualizing first regression (lines 48-50)
+```{r}
+regression=lm(aqi ~ deaths + county + date + pollutant + number_of_sites_reporting, data = merged_data)
+ggpredict(regression)
+```
+Visualizing second (reverse) regression (lines 58-60 )
+```{r}
+reverse_regression=lm(deaths ~ aqi + county + date + pollutant + number_of_sites_reporting, data = merged_data)
+ggpredict(reverse_regression)
+```
 
