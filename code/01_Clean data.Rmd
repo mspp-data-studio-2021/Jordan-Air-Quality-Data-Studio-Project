@@ -161,6 +161,6 @@ new_EPA_2020
 new_EPA_2021
 new_NYS_Covid_Deaths
 
-#add code that automatically saves cleaned datasets to clean data folder
+These clean datasets are located in the "clean data" folder in the project's repo
 
 
