@@ -32,7 +32,7 @@ First, I want to run a regression with deaths as my independent variable and aqi
 ```{r}
 regression_results <- lm(aqi ~ deaths, data = merged_data) %>% 
     tidy()
-regression_results
+view(regression_results)
 ```
 I got a p value of 0.2435661. It is not statistically significant at the 5% level. 
 
@@ -40,36 +40,40 @@ Now, I'll run the same regression but also add in controls. Because I am working
 
 I'm going to control for county, date, pollutant, and number_of_sites_reporting
 
+Before running the regression, I need to change the date column to a character variable, so I'm assigning that to a new dataframe that I'll use for the rest of this notebook. 
 ```{r}
-merged_data <- mutate(merged_data, date = as.character(date))
-
-regression_results_with_controls <- lm(aqi ~ deaths + county + date + pollutant + number_of_sites_reporting, data = merged_data)
+merged_data_2 <- mutate(merged_data, date = as.character(date))
+view(merged_data_2)
+```
+Now I can run the regression
+```{r}
+regression_results_with_controls <- lm(aqi ~ deaths + county + date + pollutant + number_of_sites_reporting, data = merged_data_2)
 summary(regression_results_with_controls)
 ```
 
 ```{r}
-regression_results_with_controls <- lm(aqi ~ deaths + county + date + pollutant + number_of_sites_reporting, data = merged_data) %>% 
+regression_results_with_controls <- lm(aqi ~ deaths + county + date + pollutant + number_of_sites_reporting, data = merged_data_2) %>% 
     tidy()
 view(regression_results_with_controls)
 ```
 
-I got a p value of 2.767511e-23. It is significant at the 1% level.
+I got a p value of 4.761161e-10. It is significant at the 1% level.
 
-With my hypothesis stated above, I was expecting a negative relationship between the two variables of interest, so my estimate should be negative. However, the estimate given by the regression is 0.003324804, indicating a positive relationship. 
+With my hypothesis stated above, I was expecting a negative relationship between the two variables of interest, so my estimate should be negative. However, the estimate given by the regression is 0.001733149, indicating a positive relationship. 
 
-To explore this positive relationship, I'm going to run a regression with deaths as my dependent variable and aqi (air pollution) as my independent variable with same controls as above. 
+To explore this positive relationship, I'm going to run a regression with deaths as my dependent variable and aqi (air pollution) as my independent variable with the same controls as above. 
 ```{r}
-reverse_regression_results_with_controls <- lm(deaths ~ aqi + county + date + pollutant + number_of_sites_reporting, data = merged_data)
+reverse_regression_results_with_controls <- lm(deaths ~ aqi + county + date + pollutant + number_of_sites_reporting, data = merged_data_2)
 summary(reverse_regression_results_with_controls)
 ```
 
 ```{r}
-reverse_regression_results_with_controls <- lm(deaths ~ aqi + county + date + pollutant + number_of_sites_reporting, data = merged_data) %>% 
+reverse_regression_results_with_controls <- lm(deaths ~ aqi + county + date + pollutant + number_of_sites_reporting, data = merged_data_2) %>% 
     tidy()
 view(reverse_regression_results_with_controls)
 ```
 
-I got a p value of 2.767511e-23, which is significant at the 1% level. The estimate is 3.187643, indicating a positive relationship. 
+I got a p value of 4.761161e-10, which is significant at the 1% level. The estimate is 2.505774, indicating a positive relationship. 
 
 This was not the result I was expecting but it makes sense (see my blog post for more information)
 
@@ -77,7 +81,7 @@ Table showing first regression results
 ```{r}
 first_regression <- lm(
   aqi ~ deaths + county + date + pollutant + number_of_sites_reporting, 
-  data = merged_data,
+  data = merged_data_2,
 )
   
 tbl_regression(
@@ -96,7 +100,7 @@ Table showing second (reverse) regression results
 ```{r}
 reverse_regression <- lm(
   deaths ~ aqi + county + date + pollutant + number_of_sites_reporting, 
-  data = merged_data,
+  data = merged_data_2,
 )
   
 tbl_regression(
@@ -113,45 +117,64 @@ tbl_regression(
 ```
 Visualizations  
 
-Visualizing first regression (lines 48-50)
+Visualizing first regression (lines 50-51)
 ```{r}
-regression=lm(aqi ~ deaths + county + date + pollutant + number_of_sites_reporting, data = merged_data)
+regression=lm(aqi ~ deaths + county + date + pollutant + number_of_sites_reporting, data = merged_data_2)
 pred1 <- ggpredict(regression)
 ```
 
 ```{r}
 ggplot(pred1$deaths) + 
   aes(x = x, y = predicted) +   
-  geom_point(aes(y = aqi, x = deaths), data = merged_data) +
+  geom_point(aes(y = aqi, x = deaths), data = merged_data_2) +
   geom_ribbon(aes(ymin = conf.low, ymax = conf.high, x = x), 
               fill = "red",
               alpha = .3,
               inherit.aes = FALSE) + 
   geom_line(color = "red", size = 1) +
-  theme_minimal()
-
-
-
+  theme_minimal() +
+  theme(
+     panel.grid.major.y = element_blank(),
+     axis.text.y = element_text(margin = margin(r = -15)),
+     plot.caption = element_text(face = "italic", color = "darkgrey", margin = margin(t = 10)), axis.text.x = element_text(angle = 45)
+  ) +
+  labs(
+    title = "Regression of AQI on COVID Deaths",
+    color = NULL,
+    x = "COVID Deaths",
+    y = "Pollutant AQI Level", 
+    caption = "Source: EPA and NYS Dept. of Health"
+  )
 ```
 
-
-
-
-Visualizing second (reverse) regression (lines 58-60 )
+Visualizing second (reverse) regression (lines 66-67 )
 ```{r}
-reverse_regression=lm(deaths ~ aqi + county + date + pollutant + number_of_sites_reporting, data = merged_data)
+reverse_regression=lm(deaths ~ aqi + county + date + pollutant + number_of_sites_reporting, data = merged_data_2)
 pred2 <- ggpredict(reverse_regression)
 ```
 
 ```{r}
 ggplot(pred2$aqi) + 
   aes(x = x, y = predicted) +   
-  geom_point(aes(y = deaths, x = aqi), data = merged_data) +
+  geom_point(aes(y = deaths, x = aqi), data = merged_data_2) +
   geom_ribbon(aes(ymin = conf.low, ymax = conf.high, x = x), 
               fill = "red",
               alpha = .3,
               inherit.aes = FALSE) + 
   geom_line(color = "red", size = 1) +
-  theme_minimal()
+  theme_minimal() + 
+  theme(
+     panel.grid.major.y = element_blank(),
+     axis.text.y = element_text(margin = margin(r = -15)),
+     plot.caption = element_text(face = "italic", color = "darkgrey", margin = margin(t = 10)), axis.text.x = element_text(angle = 45)
+  ) +
+  labs(
+    title = "Regression of COVID Deaths on AQI",
+    color = NULL,
+    x = "Pollutant AQI Level",
+    y = "COVID Deaths", 
+    caption = "Source: EPA and NYS Dept. of Health"
+  )
 ```
+
 
