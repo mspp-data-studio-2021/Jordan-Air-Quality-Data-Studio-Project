@@ -35,3 +35,7 @@ merged_data <- inner_join(
 view(merged_data)
 ```
 Now I have one dataset (called "merged_data") that I can now use for my analysis going forward.
+
+This dataset is also located in the "clean data" folder in the project's repo. 
+
+
