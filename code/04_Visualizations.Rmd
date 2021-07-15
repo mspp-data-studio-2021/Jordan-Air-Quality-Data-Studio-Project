@@ -104,7 +104,7 @@ a <- ggplot(merged_data) +
     x = "Date",
     y = "AQI Level",
   )
-ggplotly(a) %>% 
+a_plotly <- ggplotly(a) %>% 
   layout(title = list(text = paste0('Ozone and PM2.5 AQI Levels, by County, from 3/2020-3/2021',
                                     '<br>',
                                     '<sup>',
@@ -134,7 +134,7 @@ a1 <- ggplot(merged_data) +
     x = "Date",
     y = "AQI Level"
   )
-ggplotly(a1) %>% 
+a1_plotly <- ggplotly(a1) %>% 
   layout(title = list(text = paste0('Ozone and PM2.5 AQI Levels, by County, from 3/2020-3/2021',
                                     '<br>',
                                     '<sup>',
@@ -163,7 +163,7 @@ b <- merged_data %>%
     x = "Date",
     y = "AQI Level"
   )
-ggplotly(b) %>% 
+b_plotly <- ggplotly(b) %>% 
    layout(title = list(text = paste0('PM2.5 AQI Levels, by County, from 3/2020-3/2021',
                                     '<br>',
                                     '<sup>',
@@ -192,7 +192,7 @@ c <- merged_data %>%
     x = "Date",
     y = "AQI Level"
   )
-ggplotly(c) %>% 
+c_plotly <- ggplotly(c) %>% 
   layout(title = list(text = paste0('Ozone AQI Levels, by County, from 3/2020-3/2021',
                                     '<br>',
                                     '<sup>',
@@ -269,7 +269,7 @@ d <- ggplot(merged_data) +
     y = "COVID deaths",
     caption = "Source: NYS Health"
   )
-ggplotly(d) %>% 
+d_plotly <- ggplotly(d) %>% 
    layout(title = list(text = paste0('COVID Deaths in NYS, by County, from 3/2020-3/2021',
                                     '<br>',
                                     '<sup>',
@@ -298,7 +298,7 @@ d1 <- ggplot(merged_data) +
     x = "Date",
     y = "COVID deaths"
   )
-ggplotly(d1) %>% 
+d1_plotly <- ggplotly(d1) %>% 
   layout(title = list(text = paste0('COVID Deaths in NYS, by County, from 3/2020-3/2021',
                                     '<br>',
                                     '<sup>',
