@@ -9,7 +9,7 @@ This project uses [R](https://cran.rstudio.com/) and [RStudio](https://www.rstud
   * ```renv::init()```
 ## Data Sources Used
 This project uses three datasets from two different sources. 
-* [Environmental Protection Agency (EPA) data](https://aqs.epa.gov/aqsweb/airdata/download_files.html#AQI): 
+* [Environmental Protection Agency (EPA) data](https://aqs.epa.gov/aqsweb/airdata/download_files.html#AQI) 
   * Both the 2020 and 2021 dataset can be found at this link. You will need to download "daily_aqi_by_county_2020.zip" and "daily_aqi_by_county_2021.zip"
   * The EPA tracks AQI levels for 5 recognized pollutants by county each day across the country. The 2020 dataset are these measurements for the entire year of 2020. The 2021 dataset includes measurements up to and including March 2021.  
 * [NYS Department of Health](https://health.data.ny.gov/Health/New-York-State-Statewide-COVID-19-Fatalities-by-Co/xymy-pny5) 
