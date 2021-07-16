@@ -1,7 +1,9 @@
 ---
 title: "Cleaning Data"
-output: html_document
-author: Jordan Koster
+author: "Jordan Koster"
+output:
+  pdf_document: default
+  html_document: default
 ---
 In this notebook, I import and clean the three datasets I'll be using for this project. 
 
