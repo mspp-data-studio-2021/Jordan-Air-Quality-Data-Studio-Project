@@ -30,5 +30,7 @@ This project uses three datasets from two different sources.
 * Finalized visualizations can be found in the folder titled [visualizations](https://github.com/mspp-data-studio-2021/Jordan-Air-Quality-Data-Studio-Project/tree/main/visualizations) 
 ## Methods Used 
 This project uses a regression analysis to explore the relationship between 1. AQI levels for Ozone and PM2.5 pollutants and 2. NYS COVID-19 fatalities using data from March 2020 to March 2021, which was downloaded from the EPA and the NYS Department of Health websites. Visualizations are also created to track AQI levels and COVID-19 fatalities over the course of this time period, and to visualize the regression results. 
+## Published Articles 
+A blog post describing the analysis process and interpreting the results can be found [here](https://medium.com/@jordantkoster/pollution-levels-during-the-covid-19-pandemic-in-new-york-state-7832bf8e0dc7) 
 ## Acknowledgments 
 * Thank you to Professor Maxwell Austensen and the other members of the NYU Wagner MSPP 2021 cohort for their guidance and support throughout this project. 
