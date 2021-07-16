@@ -116,6 +116,7 @@ tbl_regression(
 )
 ```
 Visualizations  
+#Thank you to Renata Gerecke for her help with these visualizations 
 
 Visualizing first regression (lines 50-51)
 ```{r}
