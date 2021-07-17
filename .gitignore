@@ -5,6 +5,11 @@ env/
 *.docx
 .ipynb_checkpoints/
 .Rproj.user/
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+.env
 .Rproj.user/20E30691/pcs/windowlayoutstate.pper
 .Rproj.user/20E30691/pcs/windowlayoutstate.pper
 .Rproj.user/20E30691/pcs/windowlayoutstate.pper
